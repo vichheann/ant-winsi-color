@@ -1,0 +1,88 @@
+<project name="wincolorconsolelogger" default="dist">
+  <property environment="env"/>
+
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="etc.dir" value="${basedir}/etc"/>
+  <property name="test.dir" value="${basedir}/test"/>
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="log.dir" value="${basedir}/log"/>
+  <property name="delivery.dir" value="${basedir}/delivery"/>
+  <property name="dist.dir" value="${basedir}/dist"/>
+  <property name="generated.dir" value="${basedir}/generated"/>
+
+  <target name="checkPlateform">
+   <condition property="isWindows">
+     <os family="winnt"/>
+   </condition>
+  </target>
+
+  <target name="compile-java">
+    <mkdir dir="${build.dir}/classes"/>
+    <mkdir dir="${delivery.dir}"/>
+    <javac srcdir="${src.dir}/java" destdir="${build.dir}/classes" debug="true" debuglevel="lines,var,source"/>
+    <jar destfile="${delivery.dir}/com.piaction.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class"/>
+  </target>
+
+  <target name="test-java" depends="compile-java">
+    <mkdir dir="${log.dir}"/>
+    <javac srcdir="${test.dir}/java" destdir="${build.dir}/classes" debug="true" debuglevel="lines,var,source"/>
+    <junit printsummary="false" haltonfailure="true">
+      <classpath>
+        <pathelement location="${build.dir}/classes"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest fork="true" todir="${log.dir}">
+        <fileset dir="${test.dir}/java">
+          <include name="**/*Test*.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="compile-header" depends="compile-java">
+    <mkdir dir="${generated.dir}/include"/>
+    <javah destdir="${generated.dir}/include"
+           force="true"
+           verbose="true"
+           classpath="${build.dir}/classes"
+           class="com.piaction.tools.ant.listener.WinColorConsole"/>
+  </target>
+
+  <target name="compile-jni" depends="checkPlateform, compile-header" if="isWindows">
+    <mkdir dir="${delivery.dir}"/>
+    <echo taskName="gcc" message="Compiling dll on ${os.name} ..."/>
+    <exec taskName="gcc" dir="${src.dir}/c" executable="gcc" >
+      <arg value="-Wall"/>
+      <arg value="-D_JNI_IMPLEMENTATION_"/>
+      <arg value="-Wl,--kill-at"/>
+      <arg value="-I${generated.dir}/include"/>
+      <arg value="-I${env.JAVA_HOME}/include"/>
+      <arg value="-I${env.JAVA_HOME}/include/win32"/>
+      <arg value="-shared"/>
+      <arg value="com_piaction_tools_ant_listener_WinColorConsole.c"/>
+      <arg value="-o"/>
+      <arg value="${delivery.dir}/WinColorConsole.dll"/>
+    </exec>
+  </target>
+
+  <target name="dist" depends="compile-jni">
+    <mkdir dir="${dist.dir}"/>
+    <copy todir="${delivery.dir}/etc" overwrite="true">
+      <fileset dir="${etc.dir}"/>
+    </copy>
+    <zip destfile="${dist.dir}/ant-color.zip" basedir="${delivery.dir}"/>
+  </target>
+
+  <target name="install" depends="compile-jni">
+    <copy file="${delivery.dir}/com.piaction.tools.ant.jar" todir="${user.home}/.ant/lib" overwrite="true"/>
+    <!--copy file="${delivery.dir}/WinColorConsole.dll" todir="${user.home}/.ant" overwrite="true"/-->
+  </target>
+
+  <target name="clean">
+    <delete dir="${generated.dir}"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${log.dir}"/>
+    <delete dir="${delivery.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+</project>
