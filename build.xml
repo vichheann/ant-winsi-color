@@ -1,4 +1,4 @@
-<project name="wincolorconsolelogger" default="dist">
+<project name="WinNT Color Console Ant Logger" default="dist">
   <!--
       Copyright 2008 Vichheann Saing
 
@@ -15,6 +15,7 @@
       limitations under the License.
   -->
   <property environment="env"/>
+  <property file="${basedir}/build.properties" prefix="build"/>
 
   <property name="src.dir" value="${basedir}/src"/>
   <property name="etc.dir" value="${basedir}/etc"/>
@@ -32,10 +33,17 @@
   </target>
 
   <target name="compile-java">
+    <echo message="Building version ${build.version}"/>
     <mkdir dir="${build.dir}/classes"/>
     <mkdir dir="${delivery.dir}"/>
     <javac srcdir="${src.dir}/java" destdir="${build.dir}/classes" debug="true" debuglevel="lines,var,source"/>
-    <jar destfile="${delivery.dir}/com.piaction.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class"/>
+    <jar destfile="${delivery.dir}/com.piaction.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
+      <manifest>
+        <attribute name="Implementation-Vendor" value="Vichheann Saing"/>
+        <attribute name="Implementation-Title" value="${ant.project.name}"/>
+        <attribute name="Implementation-Version" value="${build.version}"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="test-java" depends="compile-java">
@@ -85,7 +93,7 @@
     <copy todir="${delivery.dir}/etc" overwrite="true">
       <fileset dir="${etc.dir}"/>
     </copy>
-    <zip destfile="${dist.dir}/ant-color.zip" basedir="${delivery.dir}"/>
+    <zip destfile="${dist.dir}/ant-color-${build.version}.zip" basedir="${delivery.dir}"/>
   </target>
 
   <target name="install" depends="compile-jni">
