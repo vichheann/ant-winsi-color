@@ -94,6 +94,10 @@
       <fileset dir="${etc.dir}"/>
     </copy>
     <zip destfile="${dist.dir}/ant-color-${build.version}.zip" basedir="${delivery.dir}"/>
+    <checksum file="${dist.dir}/ant-color-${build.version}.zip" property="md5sum"/>
+    <checksum file="${dist.dir}/ant-color-${build.version}.zip" algorithm="SHA" property="shasum"/>
+    <echo message="md5: ${md5sum}"/>
+    <echo message="sha: ${shasum}"/>
   </target>
 
   <target name="install" depends="compile-jni">
