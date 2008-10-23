@@ -37,6 +37,8 @@ public class WinColorConsoleLogger extends DefaultLogger
   private short _verboseColor = Color.FOREGROUND_GREEN.winCode();
   private short _debugColor = Color.FOREGROUND_BLUE.winCode();
 
+  private static boolean SHOULD_RESTORE = false;
+
   private void readColors()
   {
     String userColorFile = System.getProperty("ant.logger.defaults");
@@ -103,10 +105,8 @@ public class WinColorConsoleLogger extends DefaultLogger
     }
   }
 
-  
-  public void buildStarted(BuildEvent event)
+  private void init()
   {
-    super.buildStarted(event);
     _console = new WinColorConsole();
     _console.keepColors();
     if(!_colorSet)
@@ -114,6 +114,12 @@ public class WinColorConsoleLogger extends DefaultLogger
       readColors();
       _colorSet = true;
     }
+  }
+
+  public void buildStarted(BuildEvent event)
+  {
+    super.buildStarted(event);
+    init();
   }
 
   public void buildFinished(BuildEvent event)
@@ -129,7 +135,13 @@ public class WinColorConsoleLogger extends DefaultLogger
                               final PrintStream stream,
                               final int priority)
   {
-      if (message != null && stream != null) 
+      if (_console == null)
+      {
+        init();
+        SHOULD_RESTORE = true;
+      }
+
+      if (message != null && stream != null)
       {
         switch (priority)
         {
@@ -152,6 +164,11 @@ public class WinColorConsoleLogger extends DefaultLogger
               break;
         }
         stream.println(message);
+      }
+
+      if (SHOULD_RESTORE)
+      {
+        _console.restoreColors();
       }
   }
 }
