@@ -37,71 +37,75 @@ public enum Color
   BACKGROUND_YELLOW(0x20|0x40, 43),
   BACKGROUND_INTENSITY(0x80, 1);
 
-  private short _winCode;
-  private short _ansiCode;
+  private int winCode;
+  private int ansiCode;
 
-  Color(int winCode, int ansiCode)
+  Color(final int winCode, final int ansiCode)
   {
-    _winCode = (short) winCode;
-    _ansiCode = (short) ansiCode;
+    this.winCode = winCode;
+    this.ansiCode = ansiCode;
   }
 
-  public short winCode()
+  public int winCode()
   {
-    return _winCode;
+    return winCode;
   }
 
-  public short ansiCode()
+  public int ansiCode()
   {
-    return _ansiCode;
+    return ansiCode;
   }
 
   public String toString()
   {
-    return "(winCode:"+ _winCode + ",ansiCode:" + _ansiCode +")";
+    return "(winCode:"+ winCode + ",ansiCode:" + ansiCode +")";
   }
 
-  public short brighter()
+  public int brighter()
   {
-    short result = _winCode;
+    int result = winCode;
     if (result < BACKGROUND_BLUE.winCode())
     {
-      result = (short) (result | FOREGROUND_INTENSITY.winCode());
+      result = result | FOREGROUND_INTENSITY.winCode();
     }
     else
     {
-      result = (short) (result | BACKGROUND_INTENSITY.winCode());
+      result = result | BACKGROUND_INTENSITY.winCode();
     }
     return result;
   }
 
-  public static short ansiCodeToWinCode(String ansiCode) throws NumberFormatException
+  public static int ansiCodeToWinCode(final String ansiCode) throws NumberFormatException
   {
-    short result = FOREGROUND_WHITE.winCode();
+    int result;
+    String[] colors;
+
     if (ansiCode == null || ansiCode.length() == 0)
     {
-      return result;
+      result = FOREGROUND_WHITE.winCode();
     }
-    String[] colors = ansiCode.split(";");
-
-    result = toWinCode(Integer.parseInt(colors[1]), isBright(Integer.parseInt(colors[0])));
-
-    if (colors.length == 4)
+    else
     {
-      result = (short) (result | toWinCode(Integer.parseInt(colors[3]), isBright(Integer.parseInt(colors[2]))));
-    }
+      colors = ansiCode.split(";");
 
+      result = toWinCode(Integer.parseInt(colors[1]), isBright(Integer.parseInt(colors[0])));
+
+      if (colors.length == 4)
+      {
+        result = result | toWinCode(Integer.parseInt(colors[3]), isBright(Integer.parseInt(colors[2])));
+      }
+    }
     return result;
   }
 
-  private static boolean isBright(int value)
+  private static boolean isBright(final int value)
   {
     return value == 1;
   }
 
-  private static short toWinCode(int ansiColor, boolean brightness) throws NumberFormatException
+  private static int toWinCode(final int ansiColor, final boolean brightness) throws NumberFormatException
   {
-    short result = FOREGROUND_WHITE.winCode();
+    int result = FOREGROUND_WHITE.winCode();
     for (Color color : Color.values())
     {
       if (color.ansiCode() == ansiColor)

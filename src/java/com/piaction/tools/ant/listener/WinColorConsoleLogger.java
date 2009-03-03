@@ -12,11 +12,12 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-*/
+ */
 
 package com.piaction.tools.ant.listener;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -28,78 +29,74 @@ import org.apache.tools.ant.BuildEvent;
 
 public class WinColorConsoleLogger extends DefaultLogger
 {
+  private WinColorConsole console;
+  private Properties properties;
+  private boolean colorSet = false;
+  private int errColor = Color.FOREGROUND_RED.winCode();
+  private int warnColor = Color.FOREGROUND_MAGENTA.winCode();
+  private int infoColor = Color.FOREGROUND_CYAN.winCode();
+  private int verboseColor = Color.FOREGROUND_GREEN.winCode();
+  private int debugColor = Color.FOREGROUND_BLUE.winCode();
 
-  private WinColorConsole _console;
-  private boolean _colorSet = false;
-  private short _errColor = Color.FOREGROUND_RED.winCode();
-  private short _warnColor = Color.FOREGROUND_MAGENTA.winCode();
-  private short _infoColor = Color.FOREGROUND_CYAN.winCode();
-  private short _verboseColor = Color.FOREGROUND_GREEN.winCode();
-  private short _debugColor = Color.FOREGROUND_BLUE.winCode();
+  private static boolean shouldRestore;
 
-  private static boolean SHOULD_RESTORE = false;
+  private static final String SYSTEM_COLOR_FILE = "/org/apache/tools/ant/listener/defaults.properties";
+
+  public WinColorConsoleLogger()
+  {
+    super();
+    console = new WinColorConsoleImpl();
+  }
 
   private void readColors()
   {
-    String userColorFile = System.getProperty("ant.logger.defaults");
-    String systemColorFile = "/org/apache/tools/ant/listener/defaults.properties";
+    String userColorFile;
+    userColorFile = System.getProperty("ant.logger.defaults");
 
-    InputStream in = null;
+    if (userColorFile == null)
+    {
+      userColorFile = SYSTEM_COLOR_FILE;
+    }
+
+    InputStream inputFile = getClass().getResourceAsStream(userColorFile);
+
+    if (inputFile == null)
+    {
+      try
+      {
+        inputFile = new FileInputStream(userColorFile);
+      }
+      catch (FileNotFoundException e)
+      {
+        log(e.getMessage());
+      }
+    }
 
     try
     {
-      Properties prop = new Properties();
-
-      if (userColorFile != null)
-      {
-         in = new FileInputStream(userColorFile);
-      }
-      else
-      {
-        in = getClass().getResourceAsStream(systemColorFile);
-      }
-
-      if (in != null)
-      {
-        prop.load(in);
-      }
-
-      String errC = prop.getProperty("AnsiColorLogger.ERROR_COLOR");
-      String warn = prop.getProperty("AnsiColorLogger.WARNING_COLOR");
-      String info = prop.getProperty("AnsiColorLogger.INFO_COLOR");
-      String verbose = prop.getProperty("AnsiColorLogger.VERBOSE_COLOR");
-      String debug = prop.getProperty("AnsiColorLogger.DEBUG_COLOR");
-      if (errC != null) {
-        _errColor = Color.ansiCodeToWinCode(errC);
-      }
-      if (warn != null) {
-        _warnColor = Color.ansiCodeToWinCode(warn);
-      }
-      if (info != null) {
-        _infoColor = Color.ansiCodeToWinCode(info);
-      }
-      if (verbose != null) {
-        _verboseColor = Color.ansiCodeToWinCode(verbose);
-      }
-      if (debug != null) {
-        _debugColor = Color.ansiCodeToWinCode(debug);
-      }
+      setProperties(new Properties());
+      getProperties().load(inputFile);
+      setErrColor(Color.ansiCodeToWinCode(properties.getProperty("AnsiColorLogger.ERROR_COLOR")));
+      setWarnColor(Color.ansiCodeToWinCode(properties.getProperty("AnsiColorLogger.WARNING_COLOR")));
+      setInfoColor(Color.ansiCodeToWinCode(properties.getProperty("AnsiColorLogger.INFO_COLOR")));
+      setVerboseColor(Color.ansiCodeToWinCode(properties.getProperty("AnsiColorLogger.VERBOSE_COLOR")));
+      setDebugColor(Color.ansiCodeToWinCode(properties.getProperty("AnsiColorLogger.DEBUG_COLOR")));
     }
-    catch (IOException ioe)
+    catch (IOException e)
     {
-      //Ignore - we will use the defaults.
+      log(e.getMessage());
     }
     finally
     {
-      if (in != null)
+      if (inputFile != null)
       {
         try
         {
-          in.close();
+          inputFile.close();
         }
         catch (IOException e)
         {
-          //Ignore - We do not want this to stop the build.
+          log(e.getMessage());
         }
       }
     }
@@ -107,68 +104,143 @@ public class WinColorConsoleLogger extends DefaultLogger
 
   private void init()
   {
-    _console = new WinColorConsole();
-    _console.keepColors();
-    if(!_colorSet)
+    console.keepColors();
+    if (!isColorSet())
     {
       readColors();
-      _colorSet = true;
+      setColorSet(true);
     }
   }
 
-  public void buildStarted(BuildEvent event)
+  public void buildStarted(final BuildEvent event)
   {
     super.buildStarted(event);
     init();
   }
 
-  public void buildFinished(BuildEvent event)
+  public void buildFinished(final BuildEvent event)
   {
     super.buildFinished(event);
-    _console.restoreColors();
+    console.restoreColors();
   }
-  /**
-   * @see DefaultLogger#printMessage
-   */
-  /** {@inheritDoc}. */
-  protected void printMessage(final String message,
-                              final PrintStream stream,
+
+  protected void printMessage(final String message, final PrintStream stream,
                               final int priority)
   {
-      if (_console == null)
-      {
-        init();
-        SHOULD_RESTORE = true;
-      }
+    /*if (console == null)
+    {
+      init();
+      shouldRestore = true;
+    }*/
 
-      if (message != null && stream != null)
+    if (message != null && stream != null)
+    {
+      switch (priority)
       {
-        switch (priority)
-        {
-          case Project.MSG_ERR:
-              _console.setColor(_errColor);
-              break;
-          case Project.MSG_WARN:
-              _console.setColor(_warnColor);
-              break;
-          case Project.MSG_INFO:
-              _console.setColor(_infoColor);
-              break;
-          case Project.MSG_VERBOSE:
-              _console.setColor(_verboseColor);
-              break;
-          case Project.MSG_DEBUG:
-              // Fall through
-          default:
-              _console.setColor(_debugColor);
-              break;
-        }
-        stream.println(message);
+      case Project.MSG_ERR:
+        console.setColor(getErrColor());
+        break;
+      case Project.MSG_WARN:
+        console.setColor(getWarnColor());
+        break;
+      case Project.MSG_INFO:
+        console.setColor(getInfoColor());
+        break;
+      case Project.MSG_VERBOSE:
+        console.setColor(getVerboseColor());
+        break;
+      case Project.MSG_DEBUG:
+        // Fall through
+      default:
+        console.setColor(getDebugColor());
+        break;
       }
+      stream.println(message);
+    }
 
-      if (SHOULD_RESTORE)
-      {
-        _console.restoreColors();
-      }
+    if (shouldRestore)
+    {
+      console.restoreColors();
+    }
+  }
+
+  public WinColorConsole getConsole()
+  {
+    return console;
+  }
+
+  public void setConsole(final WinColorConsole console)
+  {
+    this.console = console;
+  }
+
+  private Properties getProperties()
+  {
+    return properties;
+  }
+
+  private void setProperties(final Properties properties)
+  {
+    this.properties = properties;
+  }
+
+  private boolean isColorSet()
+  {
+    return colorSet;
+  }
+
+  private void setColorSet(final boolean set)
+  {
+    colorSet = set;
+  }
+
+  private int getWarnColor()
+  {
+    return warnColor;
+  }
+
+  private void setWarnColor(final int warnColor)
+  {
+    this.warnColor = warnColor;
+  }
+
+  private int getErrColor()
+  {
+    return errColor;
+  }
+
+  private void setErrColor(final int errColor)
+  {
+    this.errColor = errColor;
+  }
+
+  private int getInfoColor()
+  {
+    return infoColor;
+  }
+
+  private void setInfoColor(final int infoColor)
+  {
+    this.infoColor = infoColor;
+  }
+
+  private int getVerboseColor()
+  {
+    return verboseColor;
+  }
+
+  private void setVerboseColor(final int verboseColor)
+  {
+    this.verboseColor = verboseColor;
+  }
+
+  private int getDebugColor()
+  {
+    return debugColor;
+  }
+
+  private void setDebugColor(final int debugColor)
+  {
+    this.debugColor = debugColor;
   }
 }

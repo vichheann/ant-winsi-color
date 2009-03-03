@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include <windows.h>
-#include "com_piaction_tools_ant_listener_WinColorConsole.h"
+#include "com_piaction_tools_ant_listener_WinColorConsoleImpl.h"
 
 
 int originalColors;
@@ -29,7 +29,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
   return TRUE;
 }
 
-JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_cls(JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsoleImpl_cls(JNIEnv *env, jobject obj)
 {
 
   HANDLE hConsole;
@@ -48,20 +48,20 @@ JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_cls(
   // system("cls");  will do the same as the above!
 }
 
-JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_setCursorPosition (JNIEnv *env, jobject obj, jshort x, jshort y)
+JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsoleImpl_setCursorPosition (JNIEnv *env, jobject obj, jint xCoord, jint yCoord)
 {
 
   HANDLE hConsole;
   COORD coordScreen;
 
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  coordScreen.X = x;
-  coordScreen.Y = y;
+  coordScreen.X = xCoord;
+  coordScreen.Y = yCoord;
   SetConsoleCursorPosition( hConsole, coordScreen );
 
 }
 
-JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_setColor(JNIEnv *env, jobject obj, jshort color)
+JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsoleImpl_setColor(JNIEnv *env, jobject obj, jint color)
 {
   HANDLE hConsole;
 
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_setC
   SetConsoleTextAttribute(hConsole, color);
 }
 
-JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_keepColors(JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsoleImpl_keepColors(JNIEnv *env, jobject obj)
 {
   HANDLE hConsole;
   CONSOLE_SCREEN_BUFFER_INFO ConsoleInfo;
@@ -79,10 +79,10 @@ JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_keep
   originalColors = ConsoleInfo.wAttributes;
 }
 
-JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsole_restoreColors(JNIEnv *env, jobject obj)
+JNIEXPORT void JNICALL Java_com_piaction_tools_ant_listener_WinColorConsoleImpl_restoreColors(JNIEnv *env, jobject obj)
 {
   HANDLE hConsole;
-  
+
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   SetConsoleTextAttribute(hConsole, originalColors);
 }
