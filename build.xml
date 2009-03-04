@@ -34,18 +34,12 @@
   </target>
 
   <target name="set-path">
-    <!--path id="guice">
-      <fileset dir="${lib.dir}/guice">
-        <include name="*.jar"/>
-      </fileset>
-    </path-->
     <path id="easymock">
       <fileset dir="${lib.dir}/easymock">
         <include name="*.jar"/>
       </fileset>
     </path>
     <path id="lib.classpath">
-      <!--path refid="guice"/-->
       <path refid="easymock"/>
     </path>
   </target>
@@ -72,6 +66,7 @@
         <pathelement location="${build.dir}/classes"/>
         <path refid="lib.classpath"/>
       </classpath>
+      <jvmarg value="-Djava.library.path=${delivery.dir}"/>
       <formatter type="plain" usefile="false"/>
       <batchtest fork="true" todir="${log.dir}">
         <fileset dir="${test.dir}/java">
