@@ -34,18 +34,18 @@
   </target>
 
   <target name="set-path">
-    <path id="guice">
+    <!--path id="guice">
       <fileset dir="${lib.dir}/guice">
         <include name="*.jar"/>
       </fileset>
-    </path>
+    </path-->
     <path id="easymock">
       <fileset dir="${lib.dir}/easymock">
         <include name="*.jar"/>
       </fileset>
     </path>
     <path id="lib.classpath">
-      <path refid="guice"/>
+      <!--path refid="guice"/-->
       <path refid="easymock"/>
     </path>
   </target>
