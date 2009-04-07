@@ -46,6 +46,7 @@ public class WinColorConsoleLogger extends DefaultLogger
   {
     super();
     console = new WinColorConsoleImpl();
+    Runtime.getRuntime().addShutdownHook(new ShutdownThread(console));
   }
 
   private void readColors()
@@ -242,5 +243,18 @@ public class WinColorConsoleLogger extends DefaultLogger
   private void setDebugColor(final int debugColor)
   {
     this.debugColor = debugColor;
+  }
+
+  class ShutdownThread extends Thread
+  {
+    private WinColorConsole console;
+    ShutdownThread(WinColorConsole console)
+    {
+      this.console = console;
+    }
+    public void run()
+    {
+      console.restoreColors();
+    }
   }
 }
