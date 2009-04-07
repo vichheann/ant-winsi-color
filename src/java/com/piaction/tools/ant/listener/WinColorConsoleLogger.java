@@ -247,14 +247,22 @@ public class WinColorConsoleLogger extends DefaultLogger
 
   class ShutdownThread extends Thread
   {
-    private WinColorConsole console;
-    ShutdownThread(WinColorConsole console)
+    private final WinColorConsole console;
+
+    ShutdownThread(final WinColorConsole console)
     {
+      super();
       this.console = console;
     }
+
+    private WinColorConsole getConsole()
+    {
+      return console;
+    }
+
     public void run()
     {
-      console.restoreColors();
+      getConsole().restoreColors();
     }
   }
 }
