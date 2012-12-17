@@ -48,7 +48,7 @@
     <echo message="Building version ${build.version}"/>
     <mkdir dir="${build.dir}/classes"/>
     <mkdir dir="${delivery.dir}"/>
-    <javac srcdir="${src.dir}/java" destdir="${build.dir}/classes" debug="true" debuglevel="lines,var,source" classpathref="lib.classpath"/>
+    <javac srcdir="${src.dir}/java" destdir="${build.dir}/classes" debug="true" debuglevel="lines,vars,source" classpathref="lib.classpath" includeAntRuntime="true"/>
     <jar destfile="${delivery.dir}/com.piaction.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
       <manifest>
         <attribute name="Implementation-Vendor" value="Vichheann Saing"/>
