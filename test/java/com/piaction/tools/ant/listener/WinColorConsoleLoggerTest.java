@@ -57,7 +57,7 @@ public class WinColorConsoleLoggerTest
      console.setColor(Color.FOREGROUND_BLUE.winCode());
      replay(console);
 
-     stream = new PrintStream(new File("log/testPrintMessageSequential.log"));
+     stream = new PrintStream(new File("target/log/testPrintMessageSequential.log"));
 
      logger.printMessage("test err", stream, Project.MSG_ERR);
      logger.printMessage("test warn", stream, Project.MSG_WARN);
@@ -70,7 +70,7 @@ public class WinColorConsoleLoggerTest
   @Test
   public void testPrintMessage() throws IOException
   {
-    stream = new PrintStream(new File("log/testPrintMessage.log"));
+    stream = new PrintStream(new File("target/log/testPrintMessage.log"));
 
     doTestPrintMessage(Project.MSG_ERR, Color.FOREGROUND_RED, stream);
     doTestPrintMessage(Project.MSG_WARN, Color.FOREGROUND_MAGENTA, stream);
