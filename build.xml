@@ -57,7 +57,7 @@
      includeAntRuntime="true"
            source="1.5"
            target="1.5"/>
-    <jar destfile="${delivery.dir}/com.piaction.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
+    <jar destfile="${delivery.dir}/com.hhnn.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
       <manifest>
         <attribute name="Implementation-Vendor" value="Vichheann Saing"/>
         <attribute name="Implementation-Title" value="${ant.project.name}"/>
@@ -97,7 +97,7 @@
            force="true"
            verbose="true"
            classpath="${build.dir}/classes"
-           class="com.piaction.tools.ant.listener.WinColorConsoleImpl"/>
+           class="com.hhnn.tools.ant.listener.WinColorConsoleImpl"/>
   </target>
 
   <target name="compile-jni" depends="checkPlateform, compile-header" if="isWindows">
@@ -111,7 +111,7 @@
       <arg value="-I${env.JAVA_HOME}/include"/>
       <arg value="-I${env.JAVA_HOME}/include/win32"/>
       <arg value="-shared"/>
-      <arg value="com_piaction_tools_ant_listener_WinColorConsoleImpl.c"/>
+      <arg value="com_hhnn_tools_ant_listener_WinColorConsoleImpl.c"/>
       <arg value="-o"/>
       <arg value="${delivery.dir}/WinColorConsole.dll"/>
     </exec>
@@ -130,7 +130,7 @@
   </target>
 
   <target name="install" depends="compile-jni">
-    <copy file="${delivery.dir}/com.piaction.tools.ant.jar" todir="${user.home}/.ant/lib" overwrite="true"/>
+    <copy file="${delivery.dir}/com.hhnn.tools.ant.jar" todir="${user.home}/.ant/lib" overwrite="true"/>
     <!--copy file="${delivery.dir}/WinColorConsole.dll" todir="${user.home}/.ant" overwrite="true"/-->
   </target>
 
