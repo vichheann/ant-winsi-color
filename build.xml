@@ -1,4 +1,4 @@
-<project name="WinNT Color Console Ant Logger" default="dist">
+<project name="WinNT Color Console Ant Logger" default="dist" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <!--
       Copyright 2008 Vichheann Saing
 
@@ -28,28 +28,27 @@
   <property name="dist.dir" value="${target.dir}/dist"/>
   <property name="generated.dir" value="${target.dir}/generated"/>
 
+  <path id="maven-ant-tasks.classpath" path="${lib.dir}/java/maven-ant-tasks-2.1.3.jar" />
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="antlib:org.apache.maven.artifact.ant"
+           classpathref="maven-ant-tasks.classpath" />
+
+  <artifact:dependencies pathId="lib.classpath" useScope="runtime">
+    <dependency groupId="junit" artifactId="junit" version="4.5"/>
+    <dependency groupId="org.easymock" artifactId="easymock" version="2.4"/>
+  </artifact:dependencies>
+
   <target name="checkPlateform">
    <condition property="isWindows">
      <os family="winnt"/>
    </condition>
   </target>
 
-  <target name="set-path">
-    <path id="easymock">
-      <fileset dir="${lib.dir}/easymock">
-        <include name="*.jar"/>
-      </fileset>
-    </path>
-    <path id="lib.classpath">
-      <path refid="easymock"/>
-    </path>
-  </target>
-
-  <target name="compile-java" depends="set-path">
+  <target name="compile-java">
     <echo message="Building version ${build.version}"/>
     <mkdir dir="${build.dir}/classes"/>
     <mkdir dir="${delivery.dir}"/>
-    <javac srcdir="${src.dir}/java" 
+    <javac srcdir="${src.dir}/java"
           destdir="${build.dir}/classes"
             debug="true"
        debuglevel="lines,vars,source"
