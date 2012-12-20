@@ -19,7 +19,7 @@
 
   <property name="src.dir" value="${basedir}/src"/>
   <property name="lib.dir" value="${basedir}/lib"/>
-  <property name="etc.dir" value="${basedir}/etc"/>
+  <property name="etc.dir" value="${src.dir}/resources"/>
   <property name="test.dir" value="${basedir}/test"/>
   <property name="target.dir" value="${basedir}/target"/>
   <property name="build.dir" value="${target.dir}/build"/>
