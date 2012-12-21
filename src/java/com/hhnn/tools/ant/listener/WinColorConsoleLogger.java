@@ -38,8 +38,6 @@ public class WinColorConsoleLogger extends DefaultLogger
   private int verboseColor = Color.FOREGROUND_GREEN.winCode();
   private int debugColor = Color.FOREGROUND_BLUE.winCode();
 
-  private static boolean shouldRestore;
-
   private static final String SYSTEM_COLOR_FILE = "/org/apache/tools/ant/listener/defaults.properties";
 
   public WinColorConsoleLogger()
@@ -105,9 +103,9 @@ public class WinColorConsoleLogger extends DefaultLogger
 
   private void init()
   {
-    console.keepColors();
     if (!isColorSet())
     {
+      console.keepColors();
       readColors();
       setColorSet(true);
     }
@@ -128,11 +126,7 @@ public class WinColorConsoleLogger extends DefaultLogger
   protected void printMessage(final String message, final PrintStream stream,
                               final int priority)
   {
-    /*if (console == null)
-    {
-      init();
-      shouldRestore = true;
-    }*/
+    init();
 
     if (message != null && stream != null)
     {
@@ -157,11 +151,6 @@ public class WinColorConsoleLogger extends DefaultLogger
         break;
       }
       stream.println(message);
-    }
-
-    if (shouldRestore)
-    {
-      console.restoreColors();
     }
   }
 

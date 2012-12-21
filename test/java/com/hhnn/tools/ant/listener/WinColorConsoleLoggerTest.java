@@ -41,6 +41,7 @@ public class WinColorConsoleLoggerTest
   @Test
   public void testBuildFinished()
   {
+    console.keepColors();
     console.restoreColors();
     replay(console);
     logger.buildFinished(new BuildEvent(new Project()));
@@ -50,6 +51,7 @@ public class WinColorConsoleLoggerTest
   @Test
   public void testPrintMessageSequential() throws IOException
   {
+     console.keepColors();
      console.setColor(Color.FOREGROUND_RED.winCode());
      console.setColor(Color.FOREGROUND_MAGENTA.winCode());
      console.setColor(Color.FOREGROUND_CYAN.winCode());
@@ -72,6 +74,7 @@ public class WinColorConsoleLoggerTest
   {
     stream = new PrintStream(new File("target/log/testPrintMessage.log"));
 
+    console.keepColors();
     doTestPrintMessage(Project.MSG_ERR, Color.FOREGROUND_RED, stream);
     doTestPrintMessage(Project.MSG_WARN, Color.FOREGROUND_MAGENTA, stream);
     doTestPrintMessage(Project.MSG_INFO, Color.FOREGROUND_CYAN, stream);
@@ -98,6 +101,7 @@ public class WinColorConsoleLoggerTest
   @Test
   public void testPrintMessageWithNullMessageDoesNothing()
   {
+    console.keepColors();
     replay(console);
     logger.printMessage(null, System.out, Project.MSG_ERR);
     verify(console);
