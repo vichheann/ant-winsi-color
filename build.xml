@@ -102,6 +102,12 @@
   <target name="compile-jni" depends="checkPlateform, compile-header" if="isWindows">
     <mkdir dir="${delivery.dir}"/>
     <echo taskName="gcc" message="Compiling dll on ${os.name} ..."/>
+    <exec taskName="windres" dir="${src.dir}/c" executable="windres" >
+      <arg value="-i"/>
+      <arg value="versionInfo.rc"/>
+      <arg value="-o"/>
+      <arg value="${build.dir}/versionInfo.o"/>
+    </exec>
     <exec taskName="gcc" dir="${src.dir}/c" executable="gcc" >
       <arg value="-Wall"/>
       <arg value="-D_JNI_IMPLEMENTATION_"/>
@@ -111,6 +117,7 @@
       <arg value="-I${env.JAVA_HOME}/include/win32"/>
       <arg value="-shared"/>
       <arg value="com_hhnn_tools_ant_listener_WinColorConsoleImpl.c"/>
+      <arg value="${build.dir}/versionInfo.o"/>
       <arg value="-o"/>
       <arg value="${delivery.dir}/WinColorConsole.dll"/>
     </exec>
