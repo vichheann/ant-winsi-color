@@ -6,8 +6,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #endif //_WIN32
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION 1,1,0,0
-PRODUCTVERSION 1,1,0,0
+FILEVERSION 1,2,0,0
+PRODUCTVERSION 1,2,0,0
 FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 FILEFLAGS 0x1L
@@ -23,13 +23,13 @@ BEGIN
     BLOCK "040904e4"
     BEGIN
       VALUE "CompanyName", "@2h2n"
-      VALUE "FileDescription", "WinColorConsole for ant"
-      VALUE "FileVersion", "1.1.0.0"
+      VALUE "FileDescription", "Color Ant output on Windows"
+      VALUE "FileVersion", "1.2.0.0"
       VALUE "LegalCopyright", "(c) Vichheann Saing.  All rights reserved."
-      VALUE "InternalName", "WinColorConsole.dll"
-      VALUE "OriginalFilename", "WinColorConsole.dll"
-      VALUE "ProductName", "WinColorConsole"
-      VALUE "ProductVersion", "1.1.0.0"
+      VALUE "InternalName", "com.2h2n.tools.ant"
+      VALUE "OriginalFilename", "com.2h2n.tools.ant.dll"
+      VALUE "ProductName", "Ant Color Console Logger"
+      VALUE "ProductVersion", "1.2.0.0"
     END
   END
   BLOCK "VarFileInfo"

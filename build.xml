@@ -56,7 +56,7 @@
      includeAntRuntime="true"
            source="1.5"
            target="1.5"/>
-    <jar destfile="${delivery.dir}/com.hhnn.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
+    <jar destfile="${delivery.dir}/com.2h2n.tools.ant.jar" basedir="${build.dir}/classes" excludes="**/*Test.class">
       <manifest>
         <attribute name="Implementation-Vendor" value="Vichheann Saing"/>
         <attribute name="Implementation-Title" value="${ant.project.name}"/>
@@ -119,7 +119,7 @@
       <arg value="com_hhnn_tools_ant_listener_WinColorConsoleImpl.c"/>
       <arg value="${build.dir}/versionInfo.o"/>
       <arg value="-o"/>
-      <arg value="${delivery.dir}/WinColorConsole.dll"/>
+      <arg value="${delivery.dir}/com.2h2n.tools.ant.dll"/>
     </exec>
   </target>
 
@@ -136,8 +136,8 @@
   </target>
 
   <target name="install" depends="compile-jni">
-    <copy file="${delivery.dir}/com.hhnn.tools.ant.jar" todir="${user.home}/.ant/lib" overwrite="true"/>
-    <!--copy file="${delivery.dir}/WinColorConsole.dll" todir="${user.home}/.ant" overwrite="true"/-->
+    <copy file="${delivery.dir}/com.2h2n.tools.ant.jar" todir="${user.home}/.ant/lib" overwrite="true"/>
+    <!--copy file="${delivery.dir}/com.2h2n.tools.ant.dll" todir="${user.home}/.ant" overwrite="true"/-->
   </target>
 
   <target name="clean">

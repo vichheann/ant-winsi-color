@@ -29,7 +29,7 @@ public class WinColorConsoleImpl implements WinColorConsole
     operatingSystem = System.getProperty("os.name").toLowerCase();
     if (operatingSystem.indexOf("windows") > -1 || operatingSystem.indexOf("nt") > -1)
     {
-      System.loadLibrary("WinColorConsole");
+      System.loadLibrary("com.2h2n.tools.ant");
     }
   }
 }
